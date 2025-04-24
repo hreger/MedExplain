@@ -1,4 +1,4 @@
-# 💡 Project Overview: MedExplain 🧠💉
+# 💡 MedExplain 🧠💉
 
 **MedExplain** is an **AI-driven medical diagnosis support tool** that uses **explainable AI (XAI)** techniques to assist doctors and researchers in understanding and trusting machine learning predictions. It provides **transparent, interpretable results** for disease diagnosis using patient data, and ensures **reproducibility and traceability** through a full MLops pipeline.
 
@@ -114,6 +114,4 @@ MedExplain/
 
 ---
 
-# MedExplain
-
-A medical explanation repository.
+Made with ❤️ by [ P Sanjeev Pradeep ]
