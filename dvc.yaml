@@ -5,15 +5,21 @@ stages:
       - src/preprocess.py
       - data/raw
     outs:
-      - data/processed
+      - data/processed/X_train.npy
+      - data/processed/X_test.npy
+      - data/processed/y_train.npy
+      - data/processed/y_test.npy
+      - data/processed/feature_names.joblib
+      - data/processed/scaler.joblib
 
   train:
     cmd: python src/train.py --data data/processed --output models/
     deps:
       - src/train.py
       - data/processed
+      - params.yaml
     outs:
-      - models/model.pkl
+      - models/model.joblib
     metrics:
       - metrics.json:
           cache: false
@@ -23,14 +29,15 @@ stages:
           - train.hyperparameters
 
   evaluate:
-    cmd: python src/evaluate.py --model models/model.pkl --data data/processed --output reports/
+    cmd: python src/evaluate.py --model models/model.joblib --data data/processed --output reports/
     deps:
       - src/evaluate.py
-      - models/model.pkl
+      - models/model.joblib
       - data/processed
     metrics:
       - reports/metrics.json:
           cache: false
     outs:
       - reports/figures/
+      - reports/classification_report.json
 

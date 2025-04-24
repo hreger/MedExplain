@@ -1,0 +1,114 @@
+schema: '2.0'
+stages:
+  preprocess:
+    cmd: python src/preprocess.py --input data/raw --output data/processed
+    deps:
+    - path: data/raw
+      hash: md5
+      md5: 3c6fc9c25fce8974359e6ff898d37314.dir
+      size: 24059
+      nfiles: 1
+    - path: src/preprocess.py
+      hash: md5
+      md5: 988d1f1bb0be49a72575a2227e2e0e40
+      size: 3583
+    outs:
+    - path: data/processed/X_test.npy
+      hash: md5
+      md5: c0999c01fb4cd792a9a3e984770fc8f2
+      size: 9984
+    - path: data/processed/X_train.npy
+      hash: md5
+      md5: b09991c1f45fd84f9978d8608bdb9c5e
+      size: 39424
+    - path: data/processed/feature_names.joblib
+      hash: md5
+      md5: 691addf4ec1a3d856a8893d2bbf2ae20
+      size: 121
+    - path: data/processed/scaler.joblib
+      hash: md5
+      md5: 050799dc35a4bac94e1eb7ed8a7b0fe7
+      size: 1239
+    - path: data/processed/y_test.npy
+      hash: md5
+      md5: e85fa08fde72598e1ba4b24e0d28107f
+      size: 1360
+    - path: data/processed/y_train.npy
+      hash: md5
+      md5: b526921166f2ff51acb13b47843cd2e4
+      size: 5040
+  train:
+    cmd: python src/train.py --data data/processed --output models/
+    deps:
+    - path: data/processed
+      hash: md5
+      md5: 78606d5dde70ff6dcc0a1574543285eb.dir
+      size: 57168
+      nfiles: 6
+    - path: params.yaml
+      hash: md5
+      md5: 8c9888fa09f300abf61c9f77f04b3c9d
+      size: 551
+    - path: src/train.py
+      hash: md5
+      md5: 1eab2b1e75ec42571b5815ba8fd7b902
+      size: 6096
+    params:
+      params.yaml:
+        train.hyperparameters:
+          xgboost:
+            max_depth: 6
+            learning_rate: 0.1
+            n_estimators: 100
+            subsample: 0.8
+            colsample_bytree: 0.8
+            min_child_weight: 1
+            gamma: 0
+          random_forest:
+            n_estimators: 100
+            max_depth: None
+            min_samples_split: 2
+            min_samples_leaf: 1
+            max_features: sqrt
+            bootstrap: true
+        train.model_type: xgboost
+    outs:
+    - path: metrics.json
+      hash: md5
+      md5: 52d0a95611f6587f3b24049b053a0d37
+      size: 166
+    - path: models/model.joblib
+      hash: md5
+      md5: 24150363b6aaefc13eb66cbf539feae4
+      size: 210772
+  evaluate:
+    cmd: python src/evaluate.py --model models/model.joblib --data data/processed
+      --output reports/
+    deps:
+    - path: data/processed
+      hash: md5
+      md5: 78606d5dde70ff6dcc0a1574543285eb.dir
+      size: 57168
+      nfiles: 6
+    - path: models/model.joblib
+      hash: md5
+      md5: 24150363b6aaefc13eb66cbf539feae4
+      size: 210772
+    - path: src/evaluate.py
+      hash: md5
+      md5: 79c3d2584c6af89f95c23796fd6ae923
+      size: 4373
+    outs:
+    - path: reports/classification_report.json
+      hash: md5
+      md5: 14ce3314c8b35dfd09d5f946dff6e034
+      size: 702
+    - path: reports/figures/
+      hash: md5
+      md5: 95cc0ad010c7dc3a845a1c3b27ee5a28.dir
+      size: 17663
+      nfiles: 1
+    - path: reports/metrics.json
+      hash: md5
+      md5: 52d0a95611f6587f3b24049b053a0d37
+      size: 166

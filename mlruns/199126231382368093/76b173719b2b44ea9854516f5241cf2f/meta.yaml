@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/psp17/MedExplain-1/mlruns/199126231382368093/76b173719b2b44ea9854516f5241cf2f/artifacts
+end_time: 1745505545014
+entry_point_name: ''
+experiment_id: '199126231382368093'
+lifecycle_stage: active
+run_id: 76b173719b2b44ea9854516f5241cf2f
+run_name: glamorous-skunk-989
+run_uuid: 76b173719b2b44ea9854516f5241cf2f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1745505536489
+status: 3
+tags: []
+user_id: psp17

@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/psp17/MedExplain-1/mlruns/199126231382368093/bcdaef36f9794d6fb964c8593a7e7581/artifacts
+end_time: 1745505466244
+entry_point_name: ''
+experiment_id: '199126231382368093'
+lifecycle_stage: active
+run_id: bcdaef36f9794d6fb964c8593a7e7581
+run_name: vaunted-shoat-791
+run_uuid: bcdaef36f9794d6fb964c8593a7e7581
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1745505466156
+status: 4
+tags: []
+user_id: psp17

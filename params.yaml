@@ -1,0 +1,30 @@
+train:
+  model_type: "xgboost"
+  hyperparameters:
+    xgboost:
+      max_depth: 6
+      learning_rate: 0.1
+      n_estimators: 100
+      subsample: 0.8
+      colsample_bytree: 0.8
+      min_child_weight: 1
+      gamma: 0
+    random_forest:
+      n_estimators: 100
+      max_depth: None
+      min_samples_split: 2
+      min_samples_leaf: 1
+      max_features: 'sqrt'
+      bootstrap: True
+
+data:
+  test_size: 0.2
+  random_state: 42
+
+evaluation:
+  metrics:
+    - accuracy
+    - precision
+    - recall
+    - f1
+    - roc_auc 
