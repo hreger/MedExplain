@@ -22,11 +22,16 @@ seaborn==0.13.2
 # Data Processing
 pandas==2.2.0
 numpy==1.26.3
+scipy==1.15.2
 
 # Utilities
 python-dotenv==1.0.1
 pytest==7.4.3
 joblib==1.3.2
+cloudpickle==3.1.1
+packaging==23.2
+psutil==7.0.0
+pyyaml==6.0.2
 
 # Comment: This is a simplified requirements.txt for initial setup.
 # Additional dependencies will be added incrementally as the project develops.

@@ -46,6 +46,10 @@ cd MedExplain
 pip install -r requirements.txt
 ```
 
+> **Note:** The requirements.txt file now includes additional dependencies such as `scipy`, `cloudpickle`, `packaging`, `psutil`, and `pyyaml` to ensure full compatibility with the latest model artifacts and utilities.
+pip install -r requirements.txt
+cd MedExplain
+
 ### 3. Run the App (Streamlit)
 
 ```bash
