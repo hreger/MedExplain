@@ -1,0 +1,36 @@
+stages:
+  preprocess:
+    cmd: python src/preprocess.py --input data/raw --output data/processed
+    deps:
+      - src/preprocess.py
+      - data/raw
+    outs:
+      - data/processed
+
+  train:
+    cmd: python src/train.py --data data/processed --output models/
+    deps:
+      - src/train.py
+      - data/processed
+    outs:
+      - models/model.pkl
+    metrics:
+      - metrics.json:
+          cache: false
+    params:
+      - params.yaml:
+          - train.model_type
+          - train.hyperparameters
+
+  evaluate:
+    cmd: python src/evaluate.py --model models/model.pkl --data data/processed --output reports/
+    deps:
+      - src/evaluate.py
+      - models/model.pkl
+      - data/processed
+    metrics:
+      - reports/metrics.json:
+          cache: false
+    outs:
+      - reports/figures/
+

@@ -1,0 +1,31 @@
+# Core Machine Learning
+scikit-learn==1.4.0
+xgboost==2.0.3
+
+# Explainability Tools - Temporarily excluding SHAP due to build requirements
+lime==0.2.0.1
+# shap==0.44.0 - Requires Microsoft Visual C++ 14.0 or greater
+
+# User Interfaces - Simplified for initial setup
+streamlit==1.32.0
+# gradio==4.19.2 - Added back later if needed
+
+# MLOps Tools - Core tools only
+mlflow==2.10.0
+# dvc==3.43.0 - Will add back after initial setup
+# dvc-s3==3.0.1 - Will add back after initial setup
+
+# Visualization
+matplotlib==3.8.2
+seaborn==0.13.2
+
+# Data Processing
+pandas==2.2.0
+numpy==1.26.3
+
+# Utilities
+python-dotenv==1.0.1
+pytest==7.4.3
+
+# Comment: This is a simplified requirements.txt for initial setup.
+# Additional dependencies will be added incrementally as the project develops.
