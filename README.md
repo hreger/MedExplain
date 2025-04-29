@@ -7,7 +7,6 @@
 ---
 
 ## 🚀 MVP Features
-
 ### ✅ Core
 - 🔍 **Disease Prediction Model** — Trained on medical datasets (e.g., diabetes, heart disease).
 - 🧠 **Explainability** — Integrated **LIME** and **SHAP** to visualize feature contributions.
@@ -20,19 +19,18 @@
 ## 🛠️ Tech Stack
 
 | Category         | Tools Used                          |
-|------------------|-------------------------------------|
-| Language         | Python 3.11                         |
-| Modeling         | scikit-learn, XGBoost               |
-| Explainability   | LIME, SHAP                          |
-| Dashboarding     | Streamlit / Gradio                  |
-| Experimentation  | MLflow                              |
-| Data Management  | DVC + Git                           |
-| Visualization    | matplotlib, seaborn                 |
+|-----------------|-------------------------------------|
+| Language        | Python 3.11                         |
+| Modeling        | scikit-learn, XGBoost               |
+| Explainability  | LIME, SHAP                          |
+| Dashboarding    | Streamlit / Gradio                  |
+| Experimentation | MLflow                              |
+| Data Management | DVC + Git                           |
+| Visualization   | matplotlib, seaborn                 |
 
 ---
 
 ## 🧪 Getting Started
-
 ### 1. Clone the Repository
 
 ```bash
