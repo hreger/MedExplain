@@ -1,5 +1,5 @@
 import gradio as gr
-from src.predict import predict
+from src.predict import predict_with_explanation  # Update this line
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -12,11 +12,8 @@ def make_prediction(*inputs):
             'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age'
         ]
         
-        # Create input dictionary
         input_data = dict(zip(feature_names, inputs))
-        
-        # Make prediction
-        result = predict(input_data)
+        result = predict_with_explanation(input_data)
         
         if result['error']:
             return f"Error: {result['error']}"
@@ -25,7 +22,21 @@ def make_prediction(*inputs):
         prediction = "Positive (Diabetic)" if result['prediction'] == 1 else "Negative (Non-diabetic)"
         probability = result['probability'] * 100
         
-        return f"Prediction: {prediction}\nProbability: {probability:.2f}%"
+        # Format explanations
+        explanation = f"Prediction: {prediction}\nProbability: {probability:.2f}%\n\n"
+        explanation += "Top Contributing Factors:\n"
+        
+        # Add feature importance explanation
+        for feature, importance in result['feature_importance'][:3]:
+            impact = "increases" if importance > 0 else "decreases"
+            explanation += f"- {feature} {impact} diabetes risk (impact: {abs(importance):.3f})\n"
+        
+        # Add LIME explanation
+        explanation += "\nDetailed Feature Contributions (LIME):\n"
+        for feat, imp in result['lime_explanation'][:3]:
+            explanation += f"- {feat}: {imp:.3f}\n"
+            
+        return explanation
         
     except Exception as e:
         logging.error(f"Interface error: {str(e)}")

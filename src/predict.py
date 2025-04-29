@@ -274,11 +274,36 @@ def load_models():
         raise
 
 def predict(data):
+    """Legacy function name for compatibility"""
+    return predict_with_explanation(data)
+
+import numpy as np
+import joblib
+import logging
+import lime
+import lime.lime_tabular
+import shap
+from pathlib import Path
+
+def predict_with_explanation(data):
     try:
         # Load models
-        model, scaler = load_models()
+        model_path = Path('models/diabetes_model.joblib')
+        scaler_path = Path('models/scaler.joblib')
+        
+        if not model_path.exists():
+            raise FileNotFoundError(f"Model not found at {model_path}")
+        if not scaler_path.exists():
+            raise FileNotFoundError(f"Scaler not found at {scaler_path}")
+        
+        model = joblib.load(model_path)
+        scaler = joblib.load(scaler_path)
         
         # Convert input to numpy array
+        feature_names = [
+            'Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness',
+            'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age'
+        ]
         data_array = np.array(list(data.values())).reshape(1, -1)
         
         # Scale the data
@@ -288,9 +313,37 @@ def predict(data):
         prediction = model.predict(scaled_data)
         probability = model.predict_proba(scaled_data)
         
+        # Generate LIME explanation
+        explainer = lime.lime_tabular.LimeTabularExplainer(
+            training_data=scaled_data,  # Using current data for demo
+            feature_names=feature_names,
+            class_names=['Non-diabetic', 'Diabetic'],
+            mode='classification'
+        )
+        exp = explainer.explain_instance(
+            data_array[0], 
+            model.predict_proba,
+            num_features=len(feature_names)
+        )
+        
+        # Generate SHAP explanation
+        explainer_shap = shap.TreeExplainer(model)
+        shap_values = explainer_shap.shap_values(scaled_data)
+        
+        # Get feature importance
+        feature_importance = dict(zip(feature_names, np.abs(shap_values[0])))
+        sorted_importance = sorted(
+            feature_importance.items(), 
+            key=lambda x: abs(x[1]), 
+            reverse=True
+        )
+        
         return {
             'prediction': int(prediction[0]),
             'probability': float(probability[0][1]),
+            'lime_explanation': exp.as_list(),
+            'shap_values': shap_values.tolist(),
+            'feature_importance': sorted_importance,
             'error': None
         }
     except Exception as e:
@@ -298,6 +351,9 @@ def predict(data):
         return {
             'prediction': None,
             'probability': None,
+            'lime_explanation': None,
+            'shap_values': None,
+            'feature_importance': None,
             'error': str(e)
         }
 
