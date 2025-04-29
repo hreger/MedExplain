@@ -51,7 +51,34 @@ def get_lime_explainer(model, feature_names=None, class_names=None, training_dat
     
     return explainer
 
-def explain_prediction_with_lime(model, patient_
+def explain_prediction_with_lime(model, patient_data):
+    """
+    Generate LIME explanation for a prediction
+    
+    Args:
+        model: Trained model object
+        patient_data: Patient data for explanation
+        
+    Returns:
+        Dictionary containing LIME explanation
+    """
+    try:
+        explainer = get_lime_explainer()
+        explanation = explainer.explain_instance(
+            patient_data,
+            model.predict_proba,
+            num_features=len(patient_data)
+        )
+        return {
+            'explanation': explanation.as_list(),
+            'prediction': model.predict(patient_data.reshape(1, -1))[0]
+        }
+    except Exception as e:
+        return {
+            'error': f"Failed to generate LIME explanation: {str(e)}",
+            'explanation': None,
+            'prediction': None
+        }
 
 """
 MedExplain - Explanation

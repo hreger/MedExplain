@@ -12,6 +12,8 @@ import pandas as pd
 import mlflow
 import mlflow.sklearn
 from sklearn.preprocessing import StandardScaler
+import logging
+from pathlib import Path
 
 def load_model(model_path="models/model.joblib"):
     """
@@ -253,6 +255,51 @@ def predict_disease(patient_data, model=None, model_path=None):
     """
     # Placeholder for actual implementation
     return {"prediction": "Not implemented", "probability": 0.0}
+
+def load_models():
+    try:
+        model_path = Path('models/diabetes_model.joblib')
+        scaler_path = Path('models/scaler.joblib')
+        
+        if not model_path.exists():
+            raise FileNotFoundError(f"Model not found at {model_path}")
+        if not scaler_path.exists():
+            raise FileNotFoundError(f"Scaler not found at {scaler_path}")
+            
+        model = joblib.load(model_path)
+        scaler = joblib.load(scaler_path)
+        return model, scaler
+    except Exception as e:
+        logging.error(f"Error loading models: {str(e)}")
+        raise
+
+def predict(data):
+    try:
+        # Load models
+        model, scaler = load_models()
+        
+        # Convert input to numpy array
+        data_array = np.array(list(data.values())).reshape(1, -1)
+        
+        # Scale the data
+        scaled_data = scaler.transform(data_array)
+        
+        # Make prediction
+        prediction = model.predict(scaled_data)
+        probability = model.predict_proba(scaled_data)
+        
+        return {
+            'prediction': int(prediction[0]),
+            'probability': float(probability[0][1]),
+            'error': None
+        }
+    except Exception as e:
+        logging.error(f"Prediction error: {str(e)}")
+        return {
+            'prediction': None,
+            'probability': None,
+            'error': str(e)
+        }
 
 if __name__ == "__main__":
     # Test prediction functionality
