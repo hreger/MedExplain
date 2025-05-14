@@ -108,6 +108,38 @@ MedExplain/
 - 📌 Prediction history tracking and logging
 
 ---
+## 5 W and 1 H
+### Who?
+- Medical professionals and healthcare providers
+- Patients seeking diabetes risk assessment
+- Healthcare institutions implementing AI-driven diagnostics
+### What?
+- AI-powered diabetes risk prediction system
+- Explainable AI interface for medical diagnosis
+- Real-time patient data analysis platform
+### When?
+- Real-time predictions during patient consultations
+- Batch processing for multiple patient records
+- Continuous model updates and performance tracking
+### Where?
+- Healthcare facilities and clinics
+- Medical diagnostic centers
+- Remote healthcare settings via web interface
+### Why?
+- Bridge gap between ML accuracy and medical accountability
+- Provide transparent, interpretable medical predictions
+- Support evidence-based medical decision making
+### How?
+- Through interactive Streamlit web interface
+- Using XGBoost ML model trained on Pima Indians Dataset
+- Implementing SHAP and LIME for prediction explanations
+
+## Edge (Competitive Advantages)
+1. Explainability : Unlike black-box AI systems, provides clear reasoning behind predictions
+2. User-Friendly : Intuitive interface suitable for both medical professionals and patients
+3. Dual Processing : Handles both individual and batch predictions
+4. Visual Analytics : Rich visualization of prediction factors and risk assessments
+5. Medical Context : Specifically optimized for diabetes risk assessment with medical domain knowledge
 
 ## 🧑‍💻 Author
 
