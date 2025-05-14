@@ -11,6 +11,7 @@ node_modules/
 
 # Python virtual environments
 venv/
+.venv/
 env/
 __pycache__/
 *.py[cod]

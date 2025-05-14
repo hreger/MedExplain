@@ -1,0 +1,6 @@
+# Development and Testing Dependencies
+python-dotenv==1.0.0
+pytest==7.4.3
+
+# Optional MLOps Tools
+# To install DVC, run: pip install dvc==2.58.2

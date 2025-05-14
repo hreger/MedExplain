@@ -81,7 +81,10 @@ MedExplain/
 ├── src/                      # Source code
 │   ├── predict.py            # Prediction logic
 │   └── utils/                # Helper utilities
-├── gradio_ui.py              # Main Gradio interface
+├── app.py                    # Main Streamlit interface
+├── assets/                   # Static assets (e.g., logos)
+│   └── medexplain_logo.jpg
+├── gradio_ui.py              # (Legacy) Gradio interface (optional)
 └── requirements.txt          # Dependencies list
 ```
 
