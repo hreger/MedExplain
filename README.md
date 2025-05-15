@@ -1,4 +1,3 @@
-
 # 💡 MedExplain 🧠💉
 
 MedExplain is an AI-driven medical diagnosis support system focused on transparent diabetes risk assessment using explainable AI (XAI). The system integrates a powerful predictive model with interpretable outputs, enabling medical professionals and patients to understand the _why_ behind the prediction.
@@ -8,15 +7,13 @@ MedExplain is an AI-driven medical diagnosis support system focused on transpare
 ## 🚀 Features
 
 ### ✅ Core Capabilities
-- 🔍 **Diabetes Risk Prediction**  
+- **Diabetes Risk Prediction**  
   Uses a trained **XGBoost** classifier on the **PIMA Indians Diabetes Dataset** for accurate risk assessment.
-  
-- 🧠 **Explainability with XAI**
-  - **LIME** and **SHAP** explanations showing how each feature contributed to a prediction
+- **Explainability with XAI**
+  - LIME and SHAP explanations showing how each feature contributed to a prediction
   - Ranked feature importance for interpretability
   - Per-input contribution breakdown
-
-- 📊 **Interactive Web Interface**
+- **Interactive Web Interface**
   - Real-time predictions with easy-to-use sliders
   - Live visualizations of results and contributing factors
   - Intuitive and user-friendly design
@@ -27,12 +24,94 @@ MedExplain is an AI-driven medical diagnosis support system focused on transpare
 
 | Category         | Tools & Libraries                          |
 |------------------|--------------------------------------------|
-| Language         | Python 3.11                                |
+| Language         | Python 3.11+                               |
 | Machine Learning | XGBoost, scikit-learn                      |
 | Explainability   | LIME, SHAP                                 |
 | Interface        | Streamlit                                  |
 | Data Handling    | pandas, numpy                              |
 | Visualization    | matplotlib, seaborn                        |
+| MLOps            | DVC, MLflow                                |
+
+---
+
+## 🗂️ Project Structure
+
+```
+MedExplain/
+├── data/
+│   ├── raw/                # Raw input data (diabetes.csv)
+│   └── processed/          # Preprocessed .npy and .joblib files
+├── models/                 # Trained ML models and artifacts
+│   ├── model.joblib
+│   ├── scaler.joblib
+│   └── feature_names.joblib
+├── reports/
+│   ├── metrics.json
+│   ├── classification_report.json
+│   └── figures/
+├── src/
+│   ├── download_data.py    # Download and prepare dataset
+│   ├── preprocess.py       # Data preprocessing pipeline
+│   ├── train.py            # Model training pipeline
+│   ├── evaluate.py         # Model evaluation and reporting
+│   ├── explain.py          # XAI explanations (LIME/SHAP)
+│   └── predict.py          # Prediction logic
+├── app.py                  # Main Streamlit interface
+├── gradio_ui.py            # (Legacy) Gradio interface (optional)
+├── dvc.yaml                # DVC pipeline definition
+├── params.yaml             # Model and pipeline parameters
+├── requirements.txt        # Dependencies list
+└── README.md
+```
+
+---
+
+## 📚 Dataset Info
+
+- **Source:** [PIMA Indian Diabetes Dataset](https://www.kaggle.com/datasets/uciml/pima-indians-diabetes-database)
+- **Type:** Binary classification
+- **Features:** 8 input variables
+- **Target:** Diabetic (1) or Non-diabetic (0)
+
+---
+
+## ⚙️ Pipeline Overview (DVC)
+
+The project uses DVC to manage the end-to-end ML workflow:
+
+1. **Download Data**
+   ```bash
+   python src/download_data.py
+   ```
+   Downloads the PIMA Diabetes dataset to `data/raw/diabetes.csv`.
+
+2. **Preprocess Data**
+   ```bash
+   dvc repro
+   ```
+   Or manually:
+   ```bash
+   python src/preprocess.py --input data/raw --output data/processed
+   ```
+   - Cleans and splits data
+   - Saves: `X_train.npy`, `X_test.npy`, `y_train.npy`, `y_test.npy`, `feature_names.joblib`, `scaler.joblib`
+
+3. **Train Model**
+   ```bash
+   python src/train.py --data data/processed --output models/
+   ```
+   - Trains XGBoost (or RandomForest) model
+   - Saves: `model.joblib`, `feature_names.joblib`
+   - Logs metrics to `metrics.json` and MLflow
+
+4. **Evaluate Model**
+   ```bash
+   python src/evaluate.py --model models/model.joblib --data data/processed --output reports/
+   ```
+   - Generates `metrics.json`, `classification_report.json`, and confusion matrix plot
+
+5. **Explain Predictions**
+   - Use `src/explain.py` for LIME/SHAP explanations (see script for usage)
 
 ---
 
@@ -63,83 +142,45 @@ MedExplain is an AI-driven medical diagnosis support system focused on transpare
 
 ---
 
-## 📷 Screenshots
+## 🧪 Configuration
 
-### 🔹 Prediction Result Display
-<img src="screenshots\MedExplain_ScreenShot.png" width="600"/>
-
-
-
-## 🗂️ Project Structure
-
-```
-MedExplain/
-├── data/                     # Dataset files
-├── models/                   # Trained ML models
-│   ├── diabetes_model.joblib
-│   └── scaler.joblib
-├── src/                      # Source code
-│   ├── predict.py            # Prediction logic
-│   └── utils/                # Helper utilities
-├── app.py                    # Main Streamlit interface
-├── assets/                   # Static assets (e.g., logos)
-│   └── medexplain_logo.jpg
-├── gradio_ui.py              # (Legacy) Gradio interface (optional)
-└── requirements.txt          # Dependencies list
-```
+- **params.yaml**: Controls model type, hyperparameters, data split, and evaluation metrics.
+- **dvc.yaml**: Defines pipeline stages (`preprocess`, `train`, `evaluate`).
 
 ---
 
-## 📚 Dataset Info
+## 🏃‍♂️ Quickstart
 
-- **Source:** [PIMA Indian Diabetes Dataset](https://www.kaggle.com/datasets/uciml/pima-indians-diabetes-database)
-- **Type:** Binary classification
-- **Features:** 8 input variables
-- **Target:** Diabetic (1) or Non-diabetic (0)
+1. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   pip install dvc
+   ```
+
+2. **Download the dataset**
+   ```bash
+   python src/download_data.py
+   ```
+
+3. **Run the pipeline**
+   ```bash
+   dvc repro
+   ```
+
+4. **Launch the app**
+   ```bash
+   streamlit run app.py
+   ```
 
 ---
 
-## 🔮 Planned Enhancements
+## 📝 Notes
 
-- 📌 SHAP value visualizations for deeper interpretability
-- 📌 Confidence intervals for predictions
-- 📌 Feature interaction analysis
-- 📌 Reference ranges with health indicators
-- 📌 Prediction history tracking and logging
+- All pipeline steps are reproducible and tracked with DVC.
+- Model training and evaluation metrics are logged to MLflow and JSON files.
+- For custom runs, edit `params.yaml` and re-run `dvc repro`.
 
 ---
-## 5 W and 1 H
-### Who?
-- Medical professionals and healthcare providers
-- Patients seeking diabetes risk assessment
-- Healthcare institutions implementing AI-driven diagnostics
-### What?
-- AI-powered diabetes risk prediction system
-- Explainable AI interface for medical diagnosis
-- Real-time patient data analysis platform
-### When?
-- Real-time predictions during patient consultations
-- Batch processing for multiple patient records
-- Continuous model updates and performance tracking
-### Where?
-- Healthcare facilities and clinics
-- Medical diagnostic centers
-- Remote healthcare settings via web interface
-### Why?
-- Bridge gap between ML accuracy and medical accountability
-- Provide transparent, interpretable medical predictions
-- Support evidence-based medical decision making
-### How?
-- Through interactive Streamlit web interface
-- Using XGBoost ML model trained on Pima Indians Dataset
-- Implementing SHAP and LIME for prediction explanations
-
-## Edge (Competitive Advantages)
-1. Explainability : Unlike black-box AI systems, provides clear reasoning behind predictions
-2. User-Friendly : Intuitive interface suitable for both medical professionals and patients
-3. Dual Processing : Handles both individual and batch predictions
-4. Visual Analytics : Rich visualization of prediction factors and risk assessments
-5. Medical Context : Specifically optimized for diabetes risk assessment with medical domain knowledge
 
 ## 🧑‍💻 Author
 

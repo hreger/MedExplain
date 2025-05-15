@@ -1,2 +1,0 @@
-Pregnancies (Number of pregnancies),Glucose (Plasma glucose concentration (mg/dL)),BloodPressure (Diastolic blood pressure (mm Hg)),SkinThickness (Triceps skin fold thickness (mm)),Insulin (2-Hour serum insulin (mu U/ml)),BMI (Body mass index (kg/m²)),DiabetesPedigreeFunction (Diabetes pedigree function),Age (Age (years)),Prediction and Explanation,timestamp
-1,120,70,20,80,32,0.5,25,Error: Scaler not found at models/scaler.joblib,2025-04-29 22:20:24.923614

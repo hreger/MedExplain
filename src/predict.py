@@ -14,6 +14,13 @@ import mlflow.sklearn
 from sklearn.preprocessing import StandardScaler
 import logging
 from pathlib import Path
+import lime
+import lime.lime_tabular
+import shap
+
+class ModelError(Exception):
+    """Custom exception for model-related errors"""
+    pass
 
 def load_model(model_path="models/model.joblib"):
     """
@@ -25,15 +32,17 @@ def load_model(model_path="models/model.joblib"):
     Returns:
         object: Loaded model
     """
-    if not os.path.exists(model_path):
-        raise FileNotFoundError(f"Model not found at {model_path}")
-    
-    # Load the model
-    model = joblib.load(model_path)
-    
-    return model
+    try:
+        if not Path(model_path).exists():
+            raise ModelError(f"Model file not found: {model_path}")
+            
+        model = joblib.load(model_path)
+        return model
+    except Exception as e:
+        logging.error(f"Error loading model: {str(e)}")
+        raise ModelError(f"Failed to load model: {str(e)}")
 
-def load_scaler(scaler_path="models/scaler.pkl"):
+def load_scaler(scaler_path="models/scaler.joblib"):
     """
     Load the feature scaler from disk.
     
@@ -43,13 +52,15 @@ def load_scaler(scaler_path="models/scaler.pkl"):
     Returns:
         object: Loaded scaler
     """
-    if not os.path.exists(scaler_path):
-        raise FileNotFoundError(f"Scaler not found at {scaler_path}")
-    
-    # Load the scaler
-    scaler = joblib.load(scaler_path)
-    
-    return scaler
+    try:
+        if not Path(scaler_path).exists():
+            raise FileNotFoundError(f"Scaler not found at {scaler_path}")
+        
+        scaler = joblib.load(scaler_path)
+        return scaler
+    except Exception as e:
+        logging.error(f"Error loading scaler: {str(e)}")
+        raise
 
 def load_feature_names(feature_path="models/feature_names.joblib"):
     """
@@ -61,13 +72,15 @@ def load_feature_names(feature_path="models/feature_names.joblib"):
     Returns:
         list: Feature names
     """
-    if not os.path.exists(feature_path):
+    try:
+        if not Path(feature_path).exists():
+            return None
+        
+        feature_names = joblib.load(feature_path)
+        return feature_names
+    except Exception as e:
+        logging.error(f"Error loading feature names: {str(e)}")
         return None
-    
-    # Load the feature names
-    feature_names = joblib.load(feature_path)
-    
-    return feature_names
 
 def preprocess_input(patient_data, scaler=None):
     """
@@ -83,6 +96,10 @@ def preprocess_input(patient_data, scaler=None):
     # Convert dict to DataFrame if necessary
     if isinstance(patient_data, dict):
         patient_data = pd.DataFrame([patient_data])
+    
+    # Ensure data is in correct format
+    if not isinstance(patient_data, pd.DataFrame):
+        raise ValueError("Input must be a dictionary or DataFrame")
     
     # Apply scaler if provided
     if scaler is not None:
@@ -102,28 +119,23 @@ def predict_disease(patient_data, model=None, threshold=0.5):
     Returns:
         dict: Prediction result with class and probability
     """
-    # Load model if not provided
-    if model is None:
-        model = load_model()
-    
-    # Load scaler
     try:
-        scaler = load_scaler()
-    except FileNotFoundError:
-        scaler = None
-    
-    # Preprocess data
-    processed_data = preprocess_input(patient_data, scaler)
-    
-    # Make prediction
-    try:
-        # Get probability for positive class
+        # Load model if not provided
+        if model is None:
+            model = load_model()
+        
+        # Load scaler
+        try:
+            scaler = load_scaler()
+        except FileNotFoundError:
+            scaler = None
+        
+        # Preprocess data
+        processed_data = preprocess_input(patient_data, scaler)
+        
+        # Make prediction
         probability = model.predict_proba(processed_data)[0, 1]
-        
-        # Apply threshold to determine predicted class
         prediction = 1 if probability >= threshold else 0
-        
-        # Map prediction to readable label
         label = "High risk" if prediction == 1 else "Low risk"
         
         return {
@@ -132,178 +144,34 @@ def predict_disease(patient_data, model=None, threshold=0.5):
             "probability": float(probability)
         }
     except Exception as e:
+        logging.error(f"Prediction error: {str(e)}")
         return {
             "error": str(e),
             "prediction": None,
+            "label": None,
             "probability": None
         }
 
-def batch_predict(patient_data_list, model=None, threshold=0.5):
-    """
-    Make predictions for multiple patients at once.
-    
-    Args:
-        patient_data_list (list): List of patient data (dicts or DataFrame)
-        model (object): Pre-loaded model (optional)
-        threshold (float): Probability threshold for positive class
-        
-    Returns:
-        list: List of prediction results
-    """
-    # Load model if not provided
-    if model is None:
-        model = load_model()
-    
-    # Load scaler
-    try:
-        scaler = load_scaler()
-    except FileNotFoundError:
-        scaler = None
-    
-    # Collect all patient data into a DataFrame
-    if isinstance(patient_data_list[0], dict):
-        df = pd.DataFrame(patient_data_list)
-    else:
-        df = pd.concat(patient_data_list)
-    
-    # Preprocess data
-    processed_data = preprocess_input(df, scaler)
-    
-    # Make predictions
-    probabilities = model.predict_proba(processed_data)[:, 1]
-    predictions = [1 if p >= threshold else 0 for p in probabilities]
-    labels = ["High risk" if p == 1 else "Low risk" for p in predictions]
-    
-    # Compile results
-    results = []
-    for i, (pred, prob, label) in enumerate(zip(predictions, probabilities, labels)):
-        results.append({
-            "prediction": pred,
-            "label": label,
-            "probability": float(prob)
-        })
-    
-    return results
-
-if __name__ == "__main__":
-    # Sample code for testing
-    sample_patient = {
-        'Pregnancies': 6,
-        'Glucose': 148,
-        'BloodPressure': 72,
-        'SkinThickness': 35,
-        'Insulin': 0,
-        'BMI': 33.6,
-        'DiabetesPedigreeFunction': 0.627,
-        'Age': 50
-    }
-    
-    print("This is a sample prediction module. Implement actual prediction with:")
-    print("result = predict_disease(sample_patient)")
-
-"""
-MedExplain - Prediction
-
-This module handles making predictions using trained disease prediction models.
-It loads the model and provides functions to make predictions on new patient data.
-"""
-
-import pandas as pd
-import numpy as np
-import mlflow
-import xgboost as xgb
-import pickle
-from pathlib import Path
-
-def load_model(model_path):
-    """
-    Load a trained model from disk.
-    
-    Args:
-        model_path: Path to the saved model
-        
-    Returns:
-        Loaded model
-    """
-    # Placeholder for actual implementation
-    return None
-
-def preprocess_input(patient_data):
-    """
-    Preprocess patient data for prediction.
-    
-    Args:
-        patient_data: Raw patient data (dict or dataframe)
-        
-    Returns:
-        Preprocessed data ready for model input
-    """
-    # Placeholder for actual implementation
-    return None
-
-def predict_disease(patient_data, model=None, model_path=None):
-    """
-    Make a disease prediction for a patient.
-    
-    Args:
-        patient_data: Patient features
-        model: Pre-loaded model (optional)
-        model_path: Path to model if not pre-loaded
-        
-    Returns:
-        Prediction result and probability
-    """
-    # Placeholder for actual implementation
-    return {"prediction": "Not implemented", "probability": 0.0}
-
-def load_models():
-    try:
-        model_path = Path('models/diabetes_model.joblib')
-        scaler_path = Path('models/scaler.joblib')
-        
-        if not model_path.exists():
-            raise FileNotFoundError(f"Model not found at {model_path}")
-        if not scaler_path.exists():
-            raise FileNotFoundError(f"Scaler not found at {scaler_path}")
-            
-        model = joblib.load(model_path)
-        scaler = joblib.load(scaler_path)
-        return model, scaler
-    except Exception as e:
-        logging.error(f"Error loading models: {str(e)}")
-        raise
-
-def predict(data):
-    """Legacy function name for compatibility"""
-    return predict_with_explanation(data)
-
-import numpy as np
-import joblib
-import logging
-import lime
-import lime.lime_tabular
-import shap
-from pathlib import Path
-
 def predict_with_explanation(data):
+    """
+    Make a prediction with LIME and SHAP explanations.
+    
+    Args:
+        data (dict): Patient features
+        
+    Returns:
+        dict: Prediction result with explanations
+    """
     try:
-        # Load models
-        model_path = Path('models/diabetes_model.joblib')
-        scaler_path = Path('models/scaler.joblib')
-        
-        if not model_path.exists():
-            raise FileNotFoundError(f"Model not found at {model_path}")
-        if not scaler_path.exists():
-            raise FileNotFoundError(f"Scaler not found at {scaler_path}")
-        
-        model = joblib.load(model_path)
-        scaler = joblib.load(scaler_path)
-        
-        # Convert input to numpy array
-        feature_names = [
+        # Load models and scaler
+        model = load_model()
+        scaler = load_scaler()
+        feature_names = load_feature_names() or [
             'Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness',
             'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age'
         ]
+        
+        # Convert input to numpy array
         data_array = np.array(list(data.values())).reshape(1, -1)
         
         # Scale the data
@@ -313,9 +181,17 @@ def predict_with_explanation(data):
         prediction = model.predict(scaled_data)
         probability = model.predict_proba(scaled_data)
         
+        # Load training data for LIME explainer
+        try:
+            X_train = np.load('data/processed/X_train.npy')
+            X_train_scaled = scaler.transform(X_train)
+        except FileNotFoundError:
+            logging.warning("Training data not found, using current data for LIME")
+            X_train_scaled = scaled_data
+        
         # Generate LIME explanation
         explainer = lime.lime_tabular.LimeTabularExplainer(
-            training_data=scaled_data,  # Using current data for demo
+            training_data=X_train_scaled,
             feature_names=feature_names,
             class_names=['Non-diabetic', 'Diabetic'],
             mode='classification'
@@ -359,5 +235,17 @@ def predict_with_explanation(data):
 
 if __name__ == "__main__":
     # Test prediction functionality
-    print("Prediction module")
+    sample_patient = {
+        'Pregnancies': 6,
+        'Glucose': 148,
+        'BloodPressure': 72,
+        'SkinThickness': 35,
+        'Insulin': 0,
+        'BMI': 33.6,
+        'DiabetesPedigreeFunction': 0.627,
+        'Age': 50
+    }
+    
+    result = predict_disease(sample_patient)
+    print("Sample prediction result:", result)
 
