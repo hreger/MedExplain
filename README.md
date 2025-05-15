@@ -143,4 +143,71 @@ The project uses DVC to manage the end-to-end ML workflow:
 | `BloodPressure` | Diastolic blood pressure (mm Hg) | 0–122 |
 | `SkinThickness` | Triceps skin fold thickness (mm) | 0–99 |
 | `Insulin` | 2-Hour serum insulin (mu U/ml) | 0–846 |
-| `
+| `BMI` | Body mass index (kg/m²) | 0–67.1 |
+| `DiabetesPedigreeFunction` | Hereditary diabetes function score | 0.078–2.42 |
+| `Age` | Patient's age (years) | 21–81 |
+
+---
+
+## 📈 Output
+
+- **Prediction:** Diabetic / Non-diabetic
+- **Probability Score:** Model's confidence level
+- **Top Contributing Features:** Ranked by influence
+- **XAI Analysis:**
+  - LIME feature contributions
+  - SHAP value explanations
+  - LIME feature contributions (visual and tabular)
+  - SHAP value explanations (bar chart and interactive force plot)
+  - Feature importance visualization
+
+---
+
+## 🧪 Configuration
+
+- **params.yaml**: Controls model type, hyperparameters, data split, and evaluation metrics.
+- **dvc.yaml**: Defines pipeline stages (`preprocess`, `train`, `evaluate`).
+
+---
+
+## 🏃‍♂️ Quickstart
+
+1. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   pip install dvc
+   pip install streamlit-option-menu streamlit-shap ipython
+   ```
+
+2. **Download the dataset**
+   ```bash
+   python src/download_data.py
+   ```
+
+3. **Run the pipeline**
+   ```bash
+   dvc repro
+   ```
+
+4. **Launch the app**
+   ```bash
+   streamlit run app.py
+   ```
+
+---
+
+## 📝 Notes
+
+- All pipeline steps are reproducible and tracked with DVC.
+- Model training and evaluation metrics are logged to MLflow and JSON files.
+- For custom runs, edit `params.yaml` and re-run `dvc repro`.
+- **Modern UI:** Navigation and all components use Streamlit's latest UI features and open-source libraries.
+- **XAI for Clinicians:** The app is designed to help medical professionals understand and trust AI-driven predictions.
+
+---
+
+## 🧑‍💻 Author
+
+Made with ❤️ by **P Sanjeev Pradeep**
+
+Feel free to ⭐ the repo if you find it helpful or open an issue to contribute!
