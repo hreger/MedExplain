@@ -218,7 +218,7 @@ def predict_with_explanation(data):
             'prediction': int(prediction[0]),
             'probability': float(probability[0][1]),
             'lime_explanation': exp.as_list(),
-            'shap_values': shap_values.tolist(),
+            'shap_values': shap_values,
             'feature_importance': sorted_importance,
             'error': None
         }

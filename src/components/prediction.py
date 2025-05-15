@@ -137,23 +137,31 @@ def display_prediction_page():
             # --- SHAP Force Plot (if possible) ---
             try:
                 import shap
-                import matplotlib.pyplot as plt
+                from streamlit_shap import st_shap
                 st.markdown("#### SHAP Force Plot (Prediction Explanation)")
                 shap_values = explanation_results['shap_values']
-                feature_names = lime_df["Feature"].tolist() if explanation_results['lime_explanation'] else None
-                if shap_values and feature_names:
+                feature_names = [
+                    'Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness',
+                    'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age'
+                ]
+                if shap_values is not None and feature_names is not None:
                     shap.initjs()
-                    fig, ax = plt.subplots(figsize=(10, 1))
-                    shap.force_plot(
-                        base_value=0,  # fallback if not available
-                        shap_values=shap_values[0][0],
-                        features=[patient_data[f] for f in feature_names],
-                        feature_names=feature_names,
-                        matplotlib=True,
-                        show=False,
-                        ax=ax
-                    )
-                    st.pyplot(fig)
+                    try:
+                        # SHAP >= 0.40: Explanation object
+                        base_value = shap_values.base_values[0]
+                        values = shap_values.values[0]
+                        data = shap_values.data[0]
+                        st_shap(shap.force_plot(base_value, values, data, feature_names=feature_names))
+                    except AttributeError:
+                        # SHAP < 0.40: numpy array
+                        if isinstance(shap_values, list):
+                            arr = shap_values[0]
+                        else:
+                            arr = shap_values
+                        base_value = 0  # fallback, or use model intercept if available
+                        values = arr[0]
+                        data = [patient_data[f] for f in feature_names]
+                        st_shap(shap.force_plot(base_value, values, data, feature_names=feature_names))
             except Exception as e:
                 st.info(f"SHAP force plot not available: {e}")
 

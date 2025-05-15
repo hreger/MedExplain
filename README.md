@@ -10,10 +10,13 @@ MedExplain is an AI-driven medical diagnosis support system focused on transpare
 - **Diabetes Risk Prediction**  
   Uses a trained **XGBoost** classifier on the **PIMA Indians Diabetes Dataset** for accurate risk assessment.
 - **Explainability with XAI**
-  - LIME and SHAP explanations showing how each feature contributed to a prediction
+  - **LIME** and **SHAP** explanations showing how each feature contributed to a prediction
+  - **Interactive SHAP force plots** for per-patient explanations
   - Ranked feature importance for interpretability
   - Per-input contribution breakdown
-- **Interactive Web Interface**
+  - **XAI helps medical professionals understand the reasoning behind AI diagnoses and treatment recommendations, leading to more informed decisions.**
+- **Modern, Interactive Web Interface**
+  - Beautiful navigation with `streamlit-option-menu`
   - Real-time predictions with easy-to-use sliders
   - Live visualizations of results and contributing factors
   - Intuitive and user-friendly design
@@ -26,8 +29,8 @@ MedExplain is an AI-driven medical diagnosis support system focused on transpare
 |------------------|--------------------------------------------|
 | Language         | Python 3.11+                               |
 | Machine Learning | XGBoost, scikit-learn                      |
-| Explainability   | LIME, SHAP                                 |
-| Interface        | Streamlit                                  |
+| Explainability   | LIME, SHAP, streamlit-shap                 |
+| Interface        | Streamlit, streamlit-option-menu           |
 | Data Handling    | pandas, numpy                              |
 | Visualization    | matplotlib, seaborn                        |
 | MLOps            | DVC, MLflow                                |
@@ -136,8 +139,8 @@ The project uses DVC to manage the end-to-end ML workflow:
 - **Probability Score:** Model's confidence level
 - **Top Contributing Features:** Ranked by influence
 - **XAI Analysis:**
-  - LIME feature contributions
-  - SHAP value explanations
+  - LIME feature contributions (visual and tabular)
+  - SHAP value explanations (bar chart and interactive force plot)
   - Feature importance visualization
 
 ---
@@ -154,7 +157,7 @@ The project uses DVC to manage the end-to-end ML workflow:
 1. **Install dependencies**
    ```bash
    pip install -r requirements.txt
-   pip install dvc
+   pip install streamlit-option-menu streamlit-shap ipython
    ```
 
 2. **Download the dataset**
@@ -179,6 +182,8 @@ The project uses DVC to manage the end-to-end ML workflow:
 - All pipeline steps are reproducible and tracked with DVC.
 - Model training and evaluation metrics are logged to MLflow and JSON files.
 - For custom runs, edit `params.yaml` and re-run `dvc repro`.
+- **Modern UI:** Navigation and all components use Streamlit's latest UI features and open-source libraries.
+- **XAI for Clinicians:** The app is designed to help medical professionals understand and trust AI-driven predictions.
 
 ---
 
